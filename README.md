@@ -75,12 +75,49 @@ docker compose down -v
 
 `.env`はローカル専用で、Git管理されません。`.env.example`の値は開発用であり、AWS環境では使用しません。
 
+### MigrationとAPIを起動する
+
+```bash
+go run ./cmd/migrate
+go run ./cmd/api
+```
+
+別のターミナルからhealth checkを確認します。
+
+```bash
+curl http://localhost:8080/health/live
+curl http://localhost:8080/health/ready
+```
+
+ローカル開発ではBearer tokenの文字列を利用者IDとして扱います。
+
+```bash
+curl -X POST http://localhost:8080/api/v1/tasks \
+  -H "Authorization: Bearer local-user-a" \
+  -H "Content-Type: application/json" \
+  -d '{"title":"Learn Go API","description":"Create first task"}'
+
+curl http://localhost:8080/api/v1/tasks \
+  -H "Authorization: Bearer local-user-a"
+```
+
+この開発用認証はローカル専用です。AWS環境ではCognito access token検証へ置き換えます。
+
+### テスト
+
+```bash
+go test ./...
+go test -tags=integration ./...
+go vet ./...
+```
+
 ## ディレクトリ構成
 
 ```text
-cmd/          Goアプリケーションのエントリーポイント
-internal/     外部公開しないGoパッケージ
-migrations/   PostgreSQL schema migration
+cmd/api/      HTTP APIのエントリーポイント
+cmd/migrate/  Migration専用エントリーポイント
+internal/     認証、HTTP、task、設定
+migrations/   PostgreSQL schema migration SQL
 infra/        Terraform
 private_docs/ Codex向け計画・TODO・学習資料（Git管理対象外）
 ```
@@ -89,6 +126,7 @@ private_docs/ Codex向け計画・TODO・学習資料（Git管理対象外）
 
 - 計画と主要設計判断は`private_docs`へ整理済みです
 - GitとローカルPostgreSQL開発基盤は準備済みです
-- Go API、Terraform、GitHub Actionsは未実装です
+- Go API、task CRUD、local migrationは実装済みです
+- Cognito認証、Terraform、GitHub Actionsは未実装です
 - AWSリソースは作成していません
-- 次の作業は、Phase 2のGo API実装です
+- 次の作業は、Phase 3のコンテナとCI基盤です
