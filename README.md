@@ -28,6 +28,10 @@ Goで実装したタスク管理APIを題材に、データベース、認証、
 - GitHub Actions OIDC
 - Terraform S3 backend / S3 lockfile
 
+## 構成図
+
+![AWS Production Web Platform構成図](assets/architecture/aws-production-web-platform-architecture.png)
+
 ## 環境方針
 
 | 項目 | `dev` | `prod-reference` |
