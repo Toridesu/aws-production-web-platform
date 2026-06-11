@@ -1,0 +1,33 @@
+# 個人用・学習用資料
+private_docs/
+
+# 環境変数と秘密情報
+.env
+.env.*
+!.env.example
+*.tfvars
+*.tfvars.json
+*.auto.tfvars
+*.auto.tfvars.json
+
+# Go
+bin/
+coverage.out
+coverage.html
+
+# Terraform
+.terraform/
+*.tfstate
+*.tfstate.*
+*.tfplan
+crash.log
+crash.*.log
+.terraformrc
+terraform.rc
+
+# OS・エディタ
+.DS_Store
+Thumbs.db
+.idea/
+.vscode/
+
