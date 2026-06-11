@@ -78,10 +78,8 @@ cmd/          Goアプリケーションのエントリーポイント
 internal/     外部公開しないGoパッケージ
 migrations/   PostgreSQL schema migration
 infra/        Terraform
-private_docs/ Codex向け計画・学習資料（Git管理対象外）
+private_docs/ Codex向け計画・TODO・学習資料（Git管理対象外）
 ```
-
-進捗は[TODO.md](TODO.md)で管理します。
 
 ## 現在の状態
 
