@@ -129,4 +129,4 @@ private_docs/ Codex向け計画・TODO・学習資料（Git管理対象外）
 - Go API、task CRUD、local migrationは実装済みです
 - Cognito認証、Terraform、GitHub Actionsは未実装です
 - AWSリソースは作成していません
-- 次の作業は、Phase 3のコンテナとCI基盤です
+- 次の実装作業は、コンテナとCI基盤です
