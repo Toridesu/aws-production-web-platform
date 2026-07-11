@@ -19,5 +19,46 @@ services:
       - postgres-data:/var/lib/postgresql
     restart: unless-stopped
 
+  migrate:
+    build:
+      context: .
+      target: runtime
+    image: aws-production-web-platform-api:local
+    command: ["/usr/local/bin/migrate", "-source", "file:///app/migrations"]
+    environment:
+      DATABASE_URL: postgres://${POSTGRES_USER:-platform_app}:${POSTGRES_PASSWORD:-local-development-only}@postgres:5432/${POSTGRES_DB:-platform}?sslmode=disable
+    depends_on:
+      postgres:
+        condition: service_healthy
+    read_only: true
+    security_opt:
+      - no-new-privileges:true
+    cap_drop:
+      - ALL
+    profiles:
+      - tools
+
+  api:
+    build:
+      context: .
+      target: runtime
+    image: aws-production-web-platform-api:local
+    environment:
+      APP_ADDRESS: :8080
+      AUTH_MODE: dev
+      DATABASE_URL: postgres://${POSTGRES_USER:-platform_app}:${POSTGRES_PASSWORD:-local-development-only}@postgres:5432/${POSTGRES_DB:-platform}?sslmode=disable
+      LOG_LEVEL: ${LOG_LEVEL:-info}
+    ports:
+      - "${API_PORT:-8080}:8080"
+    depends_on:
+      postgres:
+        condition: service_healthy
+    init: true
+    read_only: true
+    security_opt:
+      - no-new-privileges:true
+    cap_drop:
+      - ALL
+
 volumes:
   postgres-data:

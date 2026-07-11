@@ -1,6 +1,6 @@
 # AWS Production Web Platform
 
-> 状態: 計画確定 / 実装未開始
+> 状態: Phase 3実装中 / Go APIのcontainer化完了
 
 Goで実装したタスク管理APIを題材に、データベース、認証、HTTPS、CI/CD、監視、バックアップ、復旧まで含めた本番想定AWS基盤を設計・構築するポートフォリオです。
 
@@ -103,6 +103,33 @@ curl http://localhost:8080/api/v1/tasks \
 
 この開発用認証はローカル専用です。AWS環境ではCognito access token検証へ置き換えます。
 
+### Docker containerで起動する
+
+APIとmigrationは同じimageから実行します。`go run ./cmd/api`を実行中の場合は、ポート競合を避けるため先に`Ctrl+C`で停止します。
+
+```bash
+docker compose build api
+docker compose run --rm migrate
+docker compose up -d api
+docker compose ps api
+```
+
+`api`が`healthy`になった後、次を確認します。
+
+```bash
+curl http://localhost:8080/health/live
+curl http://localhost:8080/health/ready
+```
+
+API containerだけを停止・削除する場合:
+
+```bash
+docker compose stop --timeout 10 api
+docker compose rm -f api
+```
+
+Dockerfileはmulti-stage buildを使用し、実行用imageへGo compilerを含めません。APIは非rootユーザーで動作し、Composeではread-only filesystem、全Linux capability削除、権限昇格禁止を設定しています。
+
 ### テスト
 
 ```bash
@@ -114,6 +141,7 @@ go vet ./...
 ## ディレクトリ構成
 
 ```text
+Dockerfile    APIとmigrationのmulti-stage container image
 cmd/api/      HTTP APIのエントリーポイント
 cmd/migrate/  Migration専用エントリーポイント
 internal/     認証、HTTP、task、設定
@@ -127,6 +155,7 @@ private_docs/ Codex向け計画・TODO・学習資料（Git管理対象外）
 - 計画と主要設計判断は`private_docs`へ整理済みです
 - GitとローカルPostgreSQL開発基盤は準備済みです
 - Go API、task CRUD、local migrationは実装済みです
+- 非root・multi-stage Docker imageとローカルcontainer検証は完了しています
 - Cognito認証、Terraform、GitHub Actionsは未実装です
 - AWSリソースは作成していません
-- 次の実装作業は、コンテナとCI基盤です
+- 次の実装作業は、GoとDockerのCI基盤です
