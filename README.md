@@ -1,6 +1,6 @@
 # AWS Production Web Platform
 
-> 状態: Phase 3実装中 / Go APIのcontainer化とCI実装完了、GitHub上の実行確認待ち
+> 状態: Phase 3完了 / Go APIのcontainer化、CI、GitHub上の実行確認完了
 
 Goで実装したタスク管理APIを題材に、データベース、認証、HTTPS、CI/CD、監視、バックアップ、復旧まで含めた本番想定AWS基盤を設計・構築するポートフォリオです。
 
@@ -177,4 +177,5 @@ private_docs/ Codex向け計画・TODO・学習資料（Git管理対象外）
 - Go、PostgreSQL、Docker imageを検査するGitHub Actions CIは実装済みです
 - Cognito認証とTerraformは未実装です
 - AWSリソースは作成していません
-- CIのGitHub上での実行確認後、次の実装作業はTerraform bootstrapと環境構成です
+- GitHub上でCIの3つのCheckとSBOM生成を確認済みです
+- 次の実装作業はTerraform bootstrapと環境構成です
