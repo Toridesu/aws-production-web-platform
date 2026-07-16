@@ -12,3 +12,5 @@ AWS基盤を4つの独立したroot moduleで管理します。Terraform workspa
 すべてのS3 backendで`use_lockfile = true`を使用します。bootstrapとfoundationは通常の環境destroyから分離します。AWS account IDとstate bucket名はGitへ保存せず、実行時に渡します。
 
 GitHub Actionsでは、全root moduleのformat、validate、TFLint、Trivy config scanを実行します。`dev`と`prod-reference`のplanはGitHub OIDCの短期認証情報を使い、plan fileをartifactへ保存しません。
+
+stateや作業directoryを失った場合は[Terraform state復旧手順](RECOVERY.md)を参照してください。
