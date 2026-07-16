@@ -1,13 +1,14 @@
-# infra
+# Terraform
 
-TerraformによるAWS基盤を配置します。
+AWS基盤を4つの独立したroot moduleで管理します。Terraform workspaceは使用しません。
 
-予定する構成:
+| directory | 責務 | state key |
+| --- | --- | --- |
+| `bootstrap` | remote state用S3 bucket | `bootstrap/terraform.tfstate` |
+| `foundation` | GitHub OIDCとTerraform Plan role | `foundation/terraform.tfstate` |
+| `environments/dev` | 短時間の実動作検証環境 | `environments/dev/terraform.tfstate` |
+| `environments/prod-reference` | 本番想定のplan専用環境 | `environments/prod-reference/terraform.tfstate` |
 
-- `bootstrap`: remote state用S3 bucket
-- `modules`: 再利用可能なTerraform module
-- `environments/dev`: 短時間の実動作検証環境
-- `environments/prod-reference`: 本番想定のplan専用環境
+すべてのS3 backendで`use_lockfile = true`を使用します。bootstrapとfoundationは通常の環境destroyから分離します。AWS account IDとstate bucket名はGitへ保存せず、実行時に渡します。
 
-実装はPhase 4以降で追加します。
-
+GitHub Actionsでは、全root moduleのformat、validate、TFLint、Trivy config scanを実行します。`dev`と`prod-reference`のplanはGitHub OIDCの短期認証情報を使い、plan fileをartifactへ保存しません。
