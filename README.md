@@ -1,6 +1,6 @@
 # AWS Production Web Platform
 
-> 状態: Phase 4進行中 / Terraform remote state、GitHub OIDC、Plan CIを構築中
+> 状態: Phase 4完了 / Terraform remote state、GitHub OIDC、Plan CIを検証済み
 
 Goで実装したタスク管理APIを題材に、データベース、認証、HTTPS、CI/CD、監視、バックアップ、復旧まで含めた本番想定AWS基盤を設計・構築するポートフォリオです。
 
