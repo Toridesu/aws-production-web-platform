@@ -1,6 +1,6 @@
 # AWS Production Web Platform
 
-> 状態: Phase 4進行中 / Terraform remote state、GitHub OIDC、Plan CIを構築中
+> 状態: Phase 3完了 / Go APIのcontainer化、CI、GitHub上の実行確認完了
 
 Goで実装したタスク管理APIを題材に、データベース、認証、HTTPS、CI/CD、監視、バックアップ、復旧まで含めた本番想定AWS基盤を設計・構築するポートフォリオです。
 
@@ -151,9 +151,6 @@ GitHub Actionsは`main`へのpush、`main`向けPull Request、手動実行で�
 | `Go Quality` | race detector付きUnit Test、`go vet`、`govulncheck` |
 | `PostgreSQL Integration` | 一時PostgreSQL、migration、race detector付きIntegration Test |
 | `Container Security` | Docker build、CycloneDX SBOM、High/Critical脆弱性検査 |
-| `Terraform Static Analysis` | fmt、TFLint、Trivy IaC misconfiguration検査 |
-| `Terraform Validate` | 4つのroot moduleの初期化とvalidate |
-| `Terraform Plan` | GitHub OIDCによる`dev`と`prod-reference`のplan |
 
 workflow全体の権限は`contents: read`だけに制限し、外部Actionは完全なcommit SHAへ固定しています。同じbranchの古い実行は`concurrency`で中止されます。SBOMはGitHub Actionsのartifactとして14日間保存します。
 
@@ -178,8 +175,7 @@ private_docs/ Codex向け計画・TODO・学習資料（Git管理対象外）
 - Go API、task CRUD、local migrationは実装済みです
 - 非root・multi-stage Docker imageとローカルcontainer検証は完了しています
 - Go、PostgreSQL、Docker imageを検査するGitHub Actions CIは実装済みです
-- Terraform state用S3 bucketとGitHub Actions OIDC・Plan roleを構築済みです
-- `dev`と`prod-reference`のTerraform root moduleを分離済みです
-- workload用VPC、ECS、RDSとCognito認証は未実装です
+- Cognito認証とTerraformは未実装です
+- AWSリソースは作成していません
 - GitHub上でCIの3つのCheckとSBOM生成を確認済みです
-- 次はTerraform Plan CIの検証後、Phase 5のnetworkとcontainer platformへ進みます
+- 次の実装作業はTerraform bootstrapと環境構成です
