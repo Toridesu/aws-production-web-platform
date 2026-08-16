@@ -1,5 +1,6 @@
 # 個人用・学習用資料
 private_docs/
+MEMO.md
 
 # 環境変数と秘密情報
 .env
