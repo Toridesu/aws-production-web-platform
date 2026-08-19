@@ -29,7 +29,8 @@ data "aws_iam_policy_document" "github_plan_trust" {
       variable = "token.actions.githubusercontent.com:sub"
 
       values = [
-        "repo:${var.github_repository}:ref:refs/heads/main"
+        "repo:${var.github_repository}:pull_request",
+        "repo:${var.github_repository}:ref:refs/heads/main",
       ]
     }
   }
@@ -43,23 +44,7 @@ resource "aws_iam_role" "github_plan" {
   tags = local.common_tags
 }
 
-data "aws_iam_policy_document" "github_plan_read" {
-  statement {
-    sid    = "ReadFoundationIam"
-    effect = "Allow"
-
-    actions = [
-      "iam:GetOpenIDConnectProvider",
-      "iam:ListOpenIDConnectProviders",
-      "iam:GetRole",
-      "iam:GetRolePolicy",
-      "iam:ListRolePolicies",
-      "iam:ListRoleTags"
-    ]
-
-    resources = ["*"]
-  }
-
+data "aws_iam_policy_document" "github_plan_identity" {
   statement {
     sid    = "GetCallerIdentity"
     effect = "Allow"
@@ -72,15 +57,15 @@ data "aws_iam_policy_document" "github_plan_read" {
   }
 }
 
-resource "aws_iam_role_policy" "github_plan_read" {
-  name   = "${local.github_plan_role_name}-read"
+resource "aws_iam_role_policy" "github_plan_identity" {
+  name   = "${local.github_plan_role_name}-identity"
   role   = aws_iam_role.github_plan.id
-  policy = data.aws_iam_policy_document.github_plan_read.json
+  policy = data.aws_iam_policy_document.github_plan_identity.json
 }
 
 data "aws_iam_policy_document" "github_plan_state" {
   statement {
-    sid    = "ListFoundationState"
+    sid    = "ListEnvironmentState"
     effect = "Allow"
 
     actions = [
@@ -95,29 +80,25 @@ data "aws_iam_policy_document" "github_plan_state" {
       test     = "StringLike"
       variable = "s3:prefix"
 
-      values = [
-        "foundation/terraform.tfstate",
-        "foundation/terraform.tfstate.tflock"
-      ]
+      values = concat(local.environment_state_keys, local.environment_lock_keys)
     }
   }
 
   statement {
-    sid    = "ReadWriteFoundationState"
+    sid    = "ReadEnvironmentState"
     effect = "Allow"
 
     actions = [
-      "s3:GetObject",
-      "s3:PutObject"
+      "s3:GetObject"
     ]
 
     resources = [
-      local.foundation_state_arn
+      for key in local.environment_state_keys : "${local.state_bucket_arn}/${key}"
     ]
   }
 
   statement {
-    sid    = "ManageFoundationLock"
+    sid    = "ManageEnvironmentLocks"
     effect = "Allow"
 
     actions = [
@@ -127,7 +108,7 @@ data "aws_iam_policy_document" "github_plan_state" {
     ]
 
     resources = [
-      local.foundation_lock_arn
+      for key in local.environment_lock_keys : "${local.state_bucket_arn}/${key}"
     ]
   }
 
