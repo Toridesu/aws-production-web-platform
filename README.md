@@ -1,6 +1,6 @@
 # AWS Production Web Platform
 
-> 状態: Phase 3完了 / Go APIのcontainer化、CI、GitHub上の実行確認完了
+> 状態: Phase 4完了 / Terraform remote state、環境分離、OIDC Plan CI構築完了
 
 Goで実装したタスク管理APIを題材に、データベース、認証、HTTPS、CI/CD、監視、バックアップ、復旧まで含めた本番想定AWS基盤を設計・構築するポートフォリオです。
 
@@ -151,6 +151,9 @@ GitHub Actionsは`main`へのpush、`main`向けPull Request、手動実行で�
 | `Go Quality` | race detector付きUnit Test、`go vet`、`govulncheck` |
 | `PostgreSQL Integration` | 一時PostgreSQL、migration、race detector付きIntegration Test |
 | `Container Security` | Docker build、CycloneDX SBOM、High/Critical脆弱性検査 |
+| `Terraform Static Analysis` | format、TFLint、Trivy config scan |
+| `Terraform Validate` | 4つのTerraform root moduleの構文・整合性検証 |
+| `Terraform Plan` | OIDC短期認証による`dev`・`prod-reference`のplan |
 
 workflow全体の権限は`contents: read`だけに制限し、外部Actionは完全なcommit SHAへ固定しています。同じbranchの古い実行は`concurrency`で中止されます。SBOMはGitHub Actionsのartifactとして14日間保存します。
 
@@ -175,7 +178,9 @@ private_docs/ Codex向け計画・TODO・学習資料（Git管理対象外）
 - Go API、task CRUD、local migrationは実装済みです
 - 非root・multi-stage Docker imageとローカルcontainer検証は完了しています
 - Go、PostgreSQL、Docker imageを検査するGitHub Actions CIは実装済みです
-- Cognito認証とTerraformは未実装です
-- AWSリソースは作成していません
+- Terraform remote state、GitHub OIDC、Plan用IAM role、4つのroot moduleは実装済みです
+- Phase 4で保持するAWSリソースはstate用S3 bucket、GitHub OIDC provider、Plan用IAM roleだけです
+- VPC、NAT Gateway、ALB、ECS、RDSなどの環境リソースはまだ作成していません
+- Cognito認証は未実装です
 - GitHub上でCIの3つのCheckとSBOM生成を確認済みです
-- 次の実装作業はTerraform bootstrapと環境構成です
+- 次の実装作業はPhase 5のnetwork、ECR、ECS、ALBです
