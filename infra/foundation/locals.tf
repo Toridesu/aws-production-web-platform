@@ -9,8 +9,13 @@ locals {
   state_bucket_name = "${var.project_name}-tfstate-${var.aws_account_id}-${var.aws_region}"
   state_bucket_arn  = "arn:aws:s3:::${local.state_bucket_name}"
 
-  foundation_state_arn = "${local.state_bucket_arn}/foundation/terraform.tfstate"
-  foundation_lock_arn  = "${local.foundation_state_arn}.tflock"
+  environment_state_keys = [
+    "environments/dev/terraform.tfstate",
+    "environments/prod-reference/terraform.tfstate",
+  ]
+  environment_lock_keys = [
+    for key in local.environment_state_keys : "${key}.tflock"
+  ]
 
   github_plan_role_name = "${var.project_name}-github-plan"
 }
