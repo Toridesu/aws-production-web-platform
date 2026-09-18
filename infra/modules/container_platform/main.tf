@@ -233,6 +233,9 @@ resource "aws_vpc_security_group_ingress_rule" "ecs_from_alb" {
   description                  = "Only the ALB may reach the API container port."
 }
 
+# Phase 5 keeps outbound HTTPS open so private ECS tasks can reach ECR and
+# CloudWatch Logs through the NAT Gateway. Egress is narrowed in later phases.
+#trivy:ignore:AVD-AWS-0104
 resource "aws_vpc_security_group_egress_rule" "ecs_https" {
   count = var.vpc_id == null ? 0 : 1
 
@@ -266,6 +269,9 @@ resource "aws_vpc_security_group_ingress_rule" "rds_from_ecs" {
   description                  = "Only ECS tasks may reach the future RDS port."
 }
 
+# Phase 5 intentionally uses an internet-facing ALB for the short-lived
+# health-check validation. Ingress remains restricted to approved /32 CIDRs.
+#trivy:ignore:AWS-0053
 resource "aws_lb" "api" {
   count = var.vpc_id == null ? 0 : 1
 
@@ -306,6 +312,9 @@ resource "aws_lb_target_group" "api" {
   })
 }
 
+# Phase 5 uses HTTP only until the Phase 6B ACM certificate and HTTPS listener
+# are introduced. The listener default action remains a fixed 403 response.
+#trivy:ignore:AWS-0054
 resource "aws_lb_listener" "http" {
   count = var.vpc_id == null ? 0 : 1
 
