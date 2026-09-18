@@ -37,7 +37,19 @@ func main() {
 
 	repository := task.NewPostgresRepository(pool)
 	service := task.NewService(repository)
-	handler := httpapi.New(logger, pool, service, auth.DevVerifier{})
+
+	var verifier auth.Verifier
+	switch cfg.AuthMode {
+	case "dev":
+		verifier = auth.DevVerifier{}
+	case "deny-all":
+		verifier = auth.DenyAllVerifier{}
+	default:
+		logger.Error("unsupported auth mode", "auth_mode", cfg.AuthMode)
+		os.Exit(1)
+	}
+
+	handler := httpapi.New(logger, pool, service, verifier)
 
 	server := &http.Server{
 		Addr:              cfg.Address,

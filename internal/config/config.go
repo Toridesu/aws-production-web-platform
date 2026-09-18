@@ -23,8 +23,8 @@ func Load() (Config, error) {
 		ShutdownTimeout: 10 * time.Second,
 	}
 
-	if cfg.AuthMode != "dev" {
-		return Config{}, fmt.Errorf("AUTH_MODE %q is not supported yet; use dev for local development", cfg.AuthMode)
+	if cfg.AuthMode != "dev" && cfg.AuthMode != "deny-all" {
+		return Config{}, fmt.Errorf("AUTH_MODE %q is not supported; use dev or deny-all", cfg.AuthMode)
 	}
 
 	return cfg, nil
