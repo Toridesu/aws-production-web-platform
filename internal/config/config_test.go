@@ -23,6 +23,19 @@ func TestLoadRejectsUnsupportedAuthMode(t *testing.T) {
 	}
 }
 
+func TestLoadAcceptsDenyAllAuthMode(t *testing.T) {
+	clearConfigEnvironment(t)
+	t.Setenv("AUTH_MODE", "deny-all")
+
+	cfg, err := Load()
+	if err != nil {
+		t.Fatalf("Load returned error: %v", err)
+	}
+	if cfg.AuthMode != "deny-all" {
+		t.Fatalf("AuthMode = %q, want deny-all", cfg.AuthMode)
+	}
+}
+
 func clearConfigEnvironment(t *testing.T) {
 	t.Helper()
 	for _, key := range []string{"APP_ADDRESS", "DATABASE_URL", "AUTH_MODE", "LOG_LEVEL"} {

@@ -89,6 +89,10 @@ jobs:
             path: infra/environments/dev
           - name: prod-reference
             path: infra/environments/prod-reference
+          - name: network-module
+            path: infra/modules/network
+          - name: container-platform-module
+            path: infra/modules/container_platform
     steps:
       - name: Checkout source code
         uses: actions/checkout@9c091bb21b7c1c1d1991bb908d89e4e9dddfe3e0 # v7.0.0
