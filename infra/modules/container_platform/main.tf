@@ -271,7 +271,7 @@ resource "aws_vpc_security_group_ingress_rule" "rds_from_ecs" {
 
 # Phase 5 intentionally uses an internet-facing ALB for the short-lived
 # health-check validation. Ingress remains restricted to approved /32 CIDRs.
-#trivy:ignore:AWS-0053
+#trivy:ignore:AVD-AWS-0053
 resource "aws_lb" "api" {
   count = var.vpc_id == null ? 0 : 1
 
@@ -314,7 +314,7 @@ resource "aws_lb_target_group" "api" {
 
 # Phase 5 uses HTTP only until the Phase 6B ACM certificate and HTTPS listener
 # are introduced. The listener default action remains a fixed 403 response.
-#trivy:ignore:AWS-0054
+#trivy:ignore:AVD-AWS-0054
 resource "aws_lb_listener" "http" {
   count = var.vpc_id == null ? 0 : 1
 
